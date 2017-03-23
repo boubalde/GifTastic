@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>nbamemes</title>
+	<meta charset="utf-8">
+  <title>Favorite Movies</title>
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>NBA Search</h1>
+
+    <!-- Rendered buttons will get dumped Here  -->
+    <div id="NBAteams-view"></div>
+
+    <form id="NBA-form">
+      <label for="team-input">Add your NBA team Bruh!</label>
+      <input type="text" id="team-input"><br>
+
+      <!-- Button triggers new teams to be added -->
+      <input id="add-team" type="submit" value="Add a NBA team Bruh!">
+    </form>
+
+    <!-- teams memes will get dumped here -->
+    <div id="team-view"></div>
+
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript">
+
+var NBAteams = ["knicks", "cavaliers", "clippers", "celtics", "spurs", "warriors", "nuggets", "blazers", "nets", "lakers", "hornets", "heat"];
+
+
+
+
+    
+
+    // Here we are building the URL we need to query the database
+    
+     function displayteamInfo() {
+
+     	var NBAteams = $(this).attr("data-name");
+
+     // Here we are building the URL we need to query the database
+     var APIKey = "dc6zaTOxFJmzC";
+
+     var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+        NBAteams + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+	
+     
+    
+    // We then created an AJAX call
+    
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).done(function(response) {
+    	
+        	console.log(queryURL);
+			console.log(response);
+
+			 // storing the data from the AJAX request in the results variable
+          var results = response.data;
+          // Looping through 10 result item
+          for (var i = 0; i < results.length; i++) {
+
+          	// Creating and storing a div tag
+            var teamDiv =  $('<div style = "display: inline-block">');
+
+            // Creating a paragraph tag with the result item's rating
+            var p = $("<p>").text("Rating: " + results[i].rating);
+
+            // Creating and storing an image tag
+           var ima_still = results[i].images.fixed_height_still.url ;
+           var ima_animate = results[i].images.fixed_height.url;
+           var still= ima_still;
+
+           
+
+
+
+			
+            //var teamImage = $("<img data-still=" + ima_still + "data-animate=" +ima_animate + ">");
+
+            
+            var teamImage = $("<img>");
+
+			teamImage.attr("src", ima_still);
+             teamImage.attr("data-still", ima_still);
+
+             teamImage.attr("src", ima_animate);
+			teamImage.attr("data-animate", ima_animate);
+
+			teamImage.attr("data-state", still);
+
+             teamImage.addClass("gif");
+            //console.log(teamImage);
+// Setting the src attribute of the image to a property pulled off the result item
+
+// Appending the paragraph and image tag to the animalDiv
+            teamDiv.append(p);
+            teamDiv.append(teamImage);
+
+            // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
+            $("#team-view").prepend(teamDiv);
+
+           }
+
+
+     });
+	}
+	 $(".gif").on("click", function() {
+      // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+      var state = $(this).attr("data-state");
+      // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+      // Then, set the image's data-state to animate
+      // Else set src to the data-still value
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
+
+	
+	   function renderButtons() {
+
+         // (this is necessary otherwise we will have repeat buttons)
+        $("#NBAteams-view").empty();
+        // Looping through the array of movies
+        for (var i = 0; i < NBAteams.length; i++) {
+
+		// dynamicaly generating buttons for each team in the array.
+		var a = $("<button>");
+          // Adding a class
+          a.addClass("NBAteam");
+          // Adding a data-attribute with a value of the team at index i.
+          a.attr("data-name", NBAteams[i]);
+          // Providing the button's text with a value of the team at index i
+          a.text(NBAteams[i]);
+          // Adding the button to the HTML
+          $("#NBAteams-view").append(a);
+
+        }
+    } // this closes the render button function.
+
+        $("#add-team").on("click", function(event) {
+        // event.preventDefault() prevents the form from trying to submit itself.
+        // We're using a form so that the user can hit enter instead of clicking the button if they want
+        event.preventDefault();
+
+        // This line will grab the text from the input box
+        var NBAteam = $("#team-input").val().trim();
+        // The team from the textbox is then added to our array
+        NBAteams.push(NBAteam);
+
+        // calling renderButtons which handles the processing of our  NBAteams array
+        renderButtons();
+      });
+
+     $(document).on("click", ".NBAteam", displayteamInfo);
+
+       renderButtons();    
+
+  
+
+</script>
+
+</body>
+
+
+</html>
